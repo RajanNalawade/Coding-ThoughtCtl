@@ -2,25 +2,24 @@ package com.example.codingthoughtctl.ui_layer.home
 
 import android.os.Bundle
 import android.util.Log
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
+import androidx.navigation.findNavController
 import com.example.codingthoughtctl.R
-import com.example.codingthoughtctl.data_layer.remote.models.ImgurResponce
+import com.example.codingthoughtctl.databinding.ActivityHomeBinding
 import com.example.codingthoughtctl.utilities.Keys
-import com.example.codingthoughtctl.utilities.NetworkResult
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class HomeActivity : AppCompatActivity() {
 
-    val viewModel: HomeViewModel by viewModels<HomeViewModel>()
-
-    private lateinit var binding: Bindin
+    private lateinit var binding: ActivityHomeBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_home)
+        binding = ActivityHomeBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        setupNavigation()
 
         Log.d("Keys", "access token ${Keys.getAssessToken()}")
         Log.d("Keys", "refresh token ${Keys.getRefreshToken()}")
@@ -29,33 +28,7 @@ class HomeActivity : AppCompatActivity() {
         Log.d("Keys", "base url ${Keys.getBaseUrl()}")
         Log.d("Keys", "access token url ${Keys.getAccessTokenUrl()}")
 
-        viewModel.topImagesResult.observe(this@HomeActivity, Observer {
-            when (it) {
-                is NetworkResult.Success -> {
-                    Log.d(
-                        "Keys",
-                        "success: ${(it as NetworkResult.Success<ImgurResponce>).data?.data?.size}"
-                    )
-                }
-
-                is NetworkResult.Error -> {
-                    Log.d(
-                        "Keys",
-                        "error: ${(it as NetworkResult.Error<ImgurResponce>).message}"
-                    )
-                }
-
-                is NetworkResult.Loading -> {
-                    Log.d("Keys", "loading: loading")
-                }
-
-                else -> {
-                    Log.d("Keys", "else: else branch")
-                }
-            }
-        })
-
-        viewModel.topSearchResult.observe(this@HomeActivity, Observer {
+        /*viewModel.topSearchResult.observe(this@HomeActivity, Observer {
             when (it) {
                 is NetworkResult.Success -> {
                     Log.d(
@@ -79,6 +52,11 @@ class HomeActivity : AppCompatActivity() {
                     Log.d("Keys", "search else: else branch")
                 }
             }
-        })
+        })*/
+    }
+
+    private fun setupNavigation() {
+        val navController = findNavController(R.id.navHostFragment)
+        navController.navigate(R.id.topImagesFragment)
     }
 }

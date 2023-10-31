@@ -4,15 +4,15 @@
 extern "C" JNIEXPORT jstring
 JNICALL
 Java_com_example_codingthoughtctl_utilities_Keys_getAssessToken(JNIEnv *env, jobject object) {
-std::string access_token = "36a028fe54c8005f6136bebb108dc2caf650233f";
-return env->NewStringUTF(access_token.c_str());
+    std::string access_token = "36a028fe54c8005f6136bebb108dc2caf650233f";
+    return env->NewStringUTF(access_token.c_str());
 }
 
 extern "C" JNIEXPORT jstring
 JNICALL
 Java_com_example_codingthoughtctl_utilities_Keys_getRefreshToken(JNIEnv *env, jobject object) {
-std::string refresh_token = "14f03f8234ca6760fe02ff258763c07ae37f3fe1";
-return env->NewStringUTF(refresh_token.c_str());
+    std::string refresh_token = "14f03f8234ca6760fe02ff258763c07ae37f3fe1";
+    return env->NewStringUTF(refresh_token.c_str());
 }
 
 extern "C" JNIEXPORT jstring

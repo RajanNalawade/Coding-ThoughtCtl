@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/topImagesFragment">
+
+    <fragment
+        android:id="@+id/topImagesFragment"
+        android:name="com.example.codingthoughtctl.ui_layer.home.TopImagesFragment"
+        android:label="fragment_top_images"
+        tools:layout="@layout/fragment_top_images" />
+</navigation>

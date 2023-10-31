@@ -49,7 +49,7 @@ android {
     }
 
     buildFeatures{
-        dataBinding = true
+        viewBinding = true
     }
 }
 
@@ -96,4 +96,9 @@ dependencies {
     //custom search view
     val simpleSearchViewVersion = "0.2.0"
     implementation("com.github.Ferfalk:SimpleSearchView:$simpleSearchViewVersion")
+
+    //navigation graph
+    var navVersion = "2.6.0"
+    implementation("androidx.navigation:navigation-fragment-ktx:$navVersion")
+    implementation("androidx.navigation:navigation-ui-ktx:$navVersion")
 }
