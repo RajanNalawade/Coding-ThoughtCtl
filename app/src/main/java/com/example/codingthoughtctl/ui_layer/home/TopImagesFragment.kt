@@ -1,29 +1,26 @@
 package com.example.codingthoughtctl.ui_layer.home
 
-import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.speech.RecognizerIntent
-import android.text.TextUtils
-import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
+import androidx.appcompat.widget.SearchView.OnQueryTextListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.codingthoughtctl.R
 import com.example.codingthoughtctl.databinding.FragmentTopImagesBinding
+import com.example.codingthoughtctl.ui_layer.adapters.TopImageAdapter
 import com.example.codingthoughtctl.utilities.NetworkResult
-import com.ferfalk.simplesearchview.SimpleSearchView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import showToast
-import javax.inject.Inject
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 /**
  * A simple [Fragment] subclass.
@@ -36,32 +33,22 @@ class TopImagesFragment : Fragment() {
     private var binding: FragmentTopImagesBinding? = null
     private val viewModel: TopImagesViewModel by viewModels<TopImagesViewModel>()
 
-    @Inject
-    lateinit var topImagesAdapter: TopImageAdapter
+    private lateinit var topImagesAdapter: TopImageAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentTopImagesBinding.inflate(inflater, container, false)
+
+        observeUiState()
+        setAllListeners()
+
         return binding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        binding?.searchView?.setBackgroundColor(
-            ContextCompat.getColor(
-                requireActivity(),
-                androidx.appcompat.R.color.accent_material_light
-            )
-
-        )
-
-        //setupSearch()
-        observeUiState()
-
-        setAllListeners()
     }
 
     private fun setAllListeners() {
@@ -73,6 +60,7 @@ class TopImagesFragment : Fragment() {
                     iconListView.isActivated = true
                     iconGridView.isActivated = false
 
+                    setHasFixedSize(true)
                     layoutManager = GridLayoutManager(requireActivity(), 1)
                     adapter = topImagesAdapter
                     //Restore RecyclerView scroll position
@@ -87,6 +75,7 @@ class TopImagesFragment : Fragment() {
                     iconListView.isActivated = false
                     iconGridView.isActivated = true
 
+                    setHasFixedSize(true)
                     layoutManager = GridLayoutManager(requireActivity(), 2)
                     adapter = topImagesAdapter
                     //Restore RecyclerView scroll position
@@ -95,63 +84,28 @@ class TopImagesFragment : Fragment() {
                 }
             }
 
-            searchView.setOnClickListener {
-                searchIcon.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
-                viewModel.searchViewVisible()
-
-                Handler().postDelayed(
-                    {
-                        /*childFragmentManager.beginTransaction()
-                            .replace(R.id.search_container, SearchFragment()).commit()*/
-                        searchView.showSearch()
-                    }, 100
-                )
-            }
-
-            searchView.enableVoiceSearch(false)
-
-            searchView.setOnSearchViewListener(object : SimpleSearchView.SearchViewListener {
-                override fun onSearchViewClosed() {
-                    /*val fragment = childFragmentManager.findFragmentById(R.id.)
-                    fragment?.let {
-                        childFragmentManager.beginTransaction().remove(it).commit()
-                    }*/
-
-                    viewModel.searchViewHidden()
-                }
-
-                override fun onSearchViewClosedAnimation() {
-                    TODO("Not yet implemented")
-                }
-
-                override fun onSearchViewShown() {
-                    lifecycleScope.launch {
-                        viewModel.isSearchOpen.value = true
-                    }
-                }
-
-                override fun onSearchViewShownAnimation() {
-                    TODO("Not yet implemented")
-                }
-
-            })
-
             lifecycleScope.launch {
-                searchView.setOnQueryTextListener(object :
-                    SimpleSearchView.OnQueryTextListener {
 
-                    override fun onQueryTextSubmit(query: String): Boolean = true
+                demoSearch.setOnQueryTextListener(object : OnQueryTextListener {
+                    override fun onQueryTextSubmit(query: String?): Boolean = true
 
-                    override fun onQueryTextChange(newText: String): Boolean {
-                        val trimmedQuery = newText.trim { it <= ' ' }
-                        val finalQuery = trimmedQuery.replace(" ", "-")
-                        viewModel.query.value = finalQuery
-                        return true
+                    override fun onQueryTextChange(newText: String?): Boolean {
+
+                        if (newText.isNullOrEmpty()) {
+                            recyclerTopWeekly.visibility = View.GONE
+                            txtSearchHint.visibility = View.VISIBLE
+                            return false
+                        } else {
+                            val trimmedQuery = newText?.trim { it <= ' ' }
+                            val finalQuery = trimmedQuery?.replace(" ", "-")
+                            topImagesAdapter.filter.filter(finalQuery)
+
+                            recyclerTopWeekly.visibility = View.VISIBLE
+                            txtSearchHint.visibility = View.GONE
+                            return true
+                        }
                     }
 
-                    override fun onQueryTextCleared(): Boolean {
-                        TODO("Not yet implemented")
-                    }
                 })
             }
         }
@@ -162,34 +116,48 @@ class TopImagesFragment : Fragment() {
             viewModel.topImagesResult.observe(viewLifecycleOwner, Observer {
 
                 binding?.circularProgress?.visibility = View.GONE
+                binding?.txtSearchHint?.visibility = View.VISIBLE
 
                 when (it) {
                     is NetworkResult.Success -> {
-                        //binding?.txtCountImages?.text = "No. Of Images : ${it.output.data?.size}"
-                        binding?.iconListView?.performClick()
-                        topImagesAdapter.submitList(it.output.data)
+
+                        val result = it.output.data
+
+                        result?.apply {
+                            val sortedListData = sortedByDescending { obj ->
+                                val sdf = SimpleDateFormat(
+                                    getString(R.string.default_date_format),
+                                    Locale.getDefault()
+                                )
+                                sdf.format(Date(obj.datetime?.toLong() ?: 0))
+                            }
+
+                            topImagesAdapter = TopImageAdapter(sortedListData)
+                            topImagesAdapter.submitList(sortedListData)
+
+                            binding?.apply {
+                                iconListView?.performClick()
+
+                                recyclerTopWeekly.visibility = View.GONE
+                                binding?.txtSearchHint?.text =
+                                    getString(R.string.search_top_weekly_images)
+                            }
+                        }
                     }
 
                     is NetworkResult.Error -> {
                         it.errorMessage?.showToast(requireContext())
+                        binding?.txtSearchHint?.text = it.errorMessage
                     }
 
                     is NetworkResult.Loading -> {
                         binding?.circularProgress?.visibility = View.VISIBLE
+                        binding?.txtSearchHint?.text = getString(R.string.loading_images)
                     }
 
                     else -> {
-                        "Something went wrong".showToast(requireContext())
+                        getString(R.string.something_went_wrong).showToast(requireContext())
                     }
-                }
-            })
-        }
-
-        lifecycleScope.launch {
-            viewModel.mUiStateCloseSearchView.observe(viewLifecycleOwner, Observer {
-                if (it) {
-                    binding?.searchView?.closeSearch()
-                    viewModel.closeSearchDone()
                 }
             })
         }
@@ -199,62 +167,4 @@ class TopImagesFragment : Fragment() {
         super.onDestroyView()
         binding = null
     }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == SimpleSearchView.REQUEST_VOICE_SEARCH && resultCode == AppCompatActivity.RESULT_OK) {
-            val matches = data!!.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
-            if (matches != null && matches.size > 0) {
-                val searchWrd = matches[0]
-                if (!TextUtils.isEmpty(searchWrd)) {
-                    binding?.searchView?.setQuery(searchWrd, false)
-                }
-            }
-            return
-        }
-        super.onActivityResult(requestCode, resultCode, data)
-    }
-
-    /*private fun setupSearch() {
-        binding.searchIcon.setOnClickListener {
-            binding.searchIcon.performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY)
-            viewModelSearch.searchViewVisible()
-            lifecycleScope.launch {
-                delay(100)
-                childFragmentManager.beginTransaction().replace(R.id.search_container, Search)
-                    .commit()
-                binding.searchView.showSearch()
-            }
-        }
-
-        binding.searchView.enableVoiceSearch(false)
-
-        binding.searchView.setOnSearchViewListener(object : SimpleSearchView.SearchViewListener {
-            override fun onSearchViewClosed() {
-                val fragment = childFragmentManager.findFragmentByTag(SearchFragment.TAG)
-                fragment?.let {
-                    childFragmentManager
-                        .beginTransaction()
-                        .remove(it)
-                        .commit()
-                }
-                viewModelSearch.searchViewHidden()
-            }
-
-            override fun onSearchViewClosedAnimation() {
-                TODO("Not yet implemented")
-            }
-
-            override fun onSearchViewShown() {
-                lifecycleScope.launch {
-                    viewModelSearch.isSearchOpen.value = true
-                }
-            }
-
-            override fun onSearchViewShownAnimation() {
-                TODO("Not yet implemented")
-            }
-
-        })
-    }*/
-
 }
