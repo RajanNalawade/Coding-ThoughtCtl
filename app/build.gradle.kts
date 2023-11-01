@@ -48,7 +48,7 @@ android {
         }
     }
 
-    buildFeatures{
+    buildFeatures {
         viewBinding = true
     }
 }
@@ -62,9 +62,6 @@ dependencies {
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
     //recyclerView
     val recyclerViewVersion = "1.3.2"
@@ -96,12 +93,24 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:$glideVersion")
     ksp("com.github.bumptech.glide:compiler:$glideVersion")
 
-    //custom search view
-    /*val simpleSearchViewVersion = "0.2.0"
-    implementation("com.github.Ferfalk:SimpleSearchView:$simpleSearchViewVersion")*/
-
     //navigation graph
     var navVersion = "2.6.0"
     implementation("androidx.navigation:navigation-fragment-ktx:$navVersion")
     implementation("androidx.navigation:navigation-ui-ktx:$navVersion")
+
+    testImplementation("junit:junit:4.13.2")
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+
+    // provides us support to test coroutines. We get test scopes and dispatchers to run coroutines
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
+
+    // Mock web server
+    //provides support for mocking of the server with which we can actually make api calls and get the output.
+    val mockServerVersion = "4.10.0"
+    testImplementation("com.squareup.okhttp3:mockwebserver:$mockServerVersion")
+
+    // Google truth for assertion
+    //provides support for better assertion and logging of results.
+    testImplementation("com.google.truth:truth:1.1.3")
 }
