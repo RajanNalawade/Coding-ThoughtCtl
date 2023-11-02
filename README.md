@@ -12,6 +12,7 @@ coding challenge
 4. Working -
   a. When application launches splash screen will appear
   b. Then In HomeActivity, TopImagesFragment will gets attached
-  c. In TopImagesFrament, first i have fetched top-weekly images from api then attached to adapter for displaying as per picture 1.![Screenshot_20231102_154624](https://github.com/RajanNalawade/Coding-ThoughtCtl/assets/46295390/a1a5b296-1f76-4ef7-a308-b0c70708216c)
+  c. In TopImagesFrament, first i have fetched top-weekly images from api then attached to adapter for displaying as per picture 1.![Screenshot_20231102_154624](https://github.com/RajanNalawade/Coding-ThoughtCtl/assets/46295390/92471585-a372-4055-bc35-8c3fea3667b1)
+
   d. In TopImagesFragment we have 3 main functionalities i -       
      
