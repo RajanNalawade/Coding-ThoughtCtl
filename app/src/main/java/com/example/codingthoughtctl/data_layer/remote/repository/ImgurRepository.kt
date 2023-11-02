@@ -14,8 +14,8 @@ class ImgurRepository @Inject constructor(
         window: String
     ): Response<ImgurResponce> = imgurApiHelper.getTopWeeklyImages(section, sort, window)
 
-    suspend fun getTopSearchQuery(
+    /*suspend fun getTopSearchQuery(
         sort: String,
         query: String?
-    ): Response<ImgurResponce> = imgurApiHelper.getTopSearchQuery(sort, query)
+    ): Response<ImgurResponce> = imgurApiHelper.getTopSearchQuery(sort, query)*/
 }

@@ -5,6 +5,7 @@ import com.example.codingthoughtctl.data_layer.remote.ImgurApiHelper
 import com.example.codingthoughtctl.data_layer.remote.ImgurApiHelperImpl
 import com.example.codingthoughtctl.data_layer.remote.ImgurApiService
 import com.example.codingthoughtctl.utilities.Keys
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

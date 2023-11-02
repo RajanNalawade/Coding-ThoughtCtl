@@ -48,6 +48,10 @@ android {
         }
     }
 
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
+
     buildFeatures {
         viewBinding = true
     }
@@ -109,6 +113,10 @@ dependencies {
     //provides support for mocking of the server with which we can actually make api calls and get the output.
     val mockServerVersion = "4.10.0"
     testImplementation("com.squareup.okhttp3:mockwebserver:$mockServerVersion")
+
+    //core mockito to mock object
+    val mockitoKotlinVersion = "1.10.19"
+    testImplementation("org.mockito:mockito-core:$mockitoKotlinVersion")
 
     // Google truth for assertion
     //provides support for better assertion and logging of results.

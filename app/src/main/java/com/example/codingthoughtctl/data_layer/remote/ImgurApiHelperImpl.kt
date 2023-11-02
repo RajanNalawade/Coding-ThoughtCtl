@@ -11,10 +11,9 @@ class ImgurApiHelperImpl(private val imgurApiService: ImgurApiService) : ImgurAp
     ): Response<ImgurResponce> =
         imgurApiService.getTopWeeklyImages(section, sort, window)
 
-    override suspend fun getTopSearchQuery(
+    /*override suspend fun getTopSearchQuery(
         sort: String,
         query: String?
-    ): Response<ImgurResponce> = imgurApiService.getTopSearchQuery(sort, query)
-
+    ): Response<ImgurResponce> = imgurApiService.getTopSearchQuery(sort, query)*/
 
 }

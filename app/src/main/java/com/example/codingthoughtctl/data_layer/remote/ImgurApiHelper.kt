@@ -10,8 +10,8 @@ interface ImgurApiHelper {
         window: String
     ): Response<ImgurResponce>
 
-    suspend fun getTopSearchQuery(
+    /*suspend fun getTopSearchQuery(
         sort: String,
         query: String?
-    ): Response<ImgurResponce>
+    ): Response<ImgurResponce>*/
 }

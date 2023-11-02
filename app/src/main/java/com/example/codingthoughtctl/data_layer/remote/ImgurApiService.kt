@@ -13,8 +13,8 @@ interface ImgurApiService {
         @Path("section") section: String, @Path("sort") sort: String, @Path("window") window: String
     ): Response<ImgurResponce>
 
-    @GET("gallery/{sort}/")
+    /*@GET("gallery/{sort}/")
     suspend fun getTopSearchQuery(
         @Path("sort") sort: String, @Query("q") query: String?
-    ): Response<ImgurResponce>
+    ): Response<ImgurResponce>*/
 }

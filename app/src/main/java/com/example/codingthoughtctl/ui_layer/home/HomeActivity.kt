@@ -25,4 +25,8 @@ class HomeActivity : AppCompatActivity() {
         val navController = findNavController(R.id.navHostFragment)
         navController.navigate(R.id.topImagesFragment)
     }
+
+    override fun onUserInteraction() {
+        super.onUserInteraction()
+    }
 }
